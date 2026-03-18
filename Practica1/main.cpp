@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include "getch.cpp"
+#include "estructuras.cpp"
 
 using namespace std;
 
@@ -16,10 +18,10 @@ void clear(){
 
 
 int main(){ 
-
-	char opcion=0;
-	while (opcion!='8')
-	{        
+	char opcion='0';
+	while (opcion=='0')
+	{       	
+		clear();
 		cout<<"SANCIONES APP. MENU PRINCIPAL"<<endl;
 		cout<<"===================================="<<endl;
         	cout<<"Indroduce un numero entre 1 y 8"<<endl;
@@ -31,11 +33,38 @@ int main(){
 		cout<<"	6. Mostrar fichero de sanciones."<<endl;
 		cout<<"	7. Mostrar cuantia de sancion."<<endl;
 		cout<<"	8. Salir."<<endl;
-        cout<<"Introduce un opcion";    
+        	cout<<"Introduce una opcion entre 1 y 8";    
 		opcion=getch();
-        cout<<opcion;
-	    clear();
-    };
-	clear();
-	return 0;		
+	    	clear();
+		
+    		switch(opcion){
+    			case '1':
+			cout<<"1"<<endl;
+			break;
+   		case '2':
+			cout<<"2"<<endl;
+			break;
+    		case '3':
+			cout<<"3"<<endl;
+			break;
+    		case '4':
+			cout<<"4"<<endl;
+			break;
+    		case '5':
+			cout<<"5"<<endl;
+			break;
+    		case '6':
+			cout<<"6"<<endl;
+			break;
+	    	case '7':
+			cout<<"7"<<endl;
+			break;
+    		case '8':
+			cout<<"8"<<endl;
+			return 0;
+    		default:
+		opcion='0';
+		}
+    	}
+	cout<<"salio"<<endl;
 };
