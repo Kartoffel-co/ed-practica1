@@ -10,19 +10,19 @@ void clear(){
                 system("clear");
             } else {
                 system("cls");
-            }
+            };
 };
 
 
 
-int main() 
+int main(){ 
 
 	char opcion=0;
 	while (opcion!='8')
 	{        
 		cout<<"SANCIONES APP. MENU PRINCIPAL"<<endl;
 		cout<<"===================================="<<endl;
-        cout<<"Indroduce un numero entre 1 y 8"<<endl;
+        	cout<<"Indroduce un numero entre 1 y 8"<<endl;
 		cout<<"	1. Consultar cehiculo."<<endl;
 		cout<<"	2. Añadir vehiculo."<<endl;
 		cout<<"	3. Mostrar radares."<<endl;
