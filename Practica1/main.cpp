@@ -1,38 +1,22 @@
 #include <iostream>
 #include <fstream>
-#include <termios.h> 
-#include <stdio.h>
-#include <unistd.h>
+
 using namespace std;
 
-char getch(void){
-	struct termios oldt, newt;
-	char ch;
-
-	tcgetattr(STDIN_FILENO, &oldt);
-	newt = oldt;
-	newt.c_lflag &= ~(ICANON | ECHO);
-	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-	ch = getchar();
-	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-
-	return ch;
-}
-
 void clear(){
-        ifstream archivo("/etc/os-release");
+	ifstream archivo("/etc/os-release");
         
         if (archivo.good()) {
                 system("clear");
             } else {
                 system("cls");
             }
-    };
+};
 
 
 
 int main() 
-{	
+
 	char opcion=0;
 	while (opcion!='8')
 	{        
