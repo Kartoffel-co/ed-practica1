@@ -2,6 +2,7 @@
 #include <fstream>
 #include "getch.cpp"
 #include "estructuras.cpp"
+#include "GestorSanciones.h"
 
 using namespace std;
 
