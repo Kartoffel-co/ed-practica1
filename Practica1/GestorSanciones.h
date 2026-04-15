@@ -1,18 +1,15 @@
-#include "structuras.cpp"
-#include "GestorSanciones.cpp"
+#include <estructuras.h>
 
-using namespace std;
-
-class GestorSancios {
-	fstream ficheroSancios;
-	cadena nomFicheroRadares;
-	cadena nomFicherosVehiculos;
-	cadena nomFicherosTipoSancion;
-	bool ficheroSancionesActivo;
-}
+class GestorSanciones {
+	fstream ficheroSanciones;//flujo de acceso al fichero de sanciones.
+	cadena nomFicheroRadares;//nombre del fichero de radares.
+	cadena nomFicheroVehiculos;//nombre del fichero de vehículos.
+	cadena nomFicheroTipoSancion;//nombre del fichero de cuantías de sanción por año.
+	bool ficheroSancionesActivo;//estado del flujo; true indica que el fichero de sanciones
+//ha sido abierto con éxito en el flujo ficheroSanciones.
 public:
-	~GestorSancios();
-	GestorSancios(cadena nFSanciones, cadena nFRadares, cadena nFVehiculos, cadena nFTipoSancion);
+	~GestorSanciones();
+	GestorSanciones(cadena nFSanciones, cadena nFRadares, cadena nFVehiculos, cadena nFTipoSancion);
 	bool getFicheroSancionesActivo();
 	void getNomFicheroVehiculos(cadena nF);
 	void getNomFicheroTipoSancion(cadena nF);
