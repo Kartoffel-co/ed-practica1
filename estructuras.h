@@ -1,3 +1,6 @@
+//#ifndef GESTORSANCIONES_H
+//#define GESTORSANCIONES_H
+
 #include <iostream>
 
 using namespace std;

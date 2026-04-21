@@ -1,18 +1,26 @@
+#ifndef GESTORSANCIONES_H
+#define GESTORSANCIONES_H
+
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include "estructuras.h"  // ← donde están cadena, radartramo, coche, etc.
+
 using namespace std;
 
-class GestorSancios {
-	fstream ficheroSancios;
+class GestorSanciones {
+	fstream ficheroSanciones;
 	cadena nomFicheroRadares;
-	cadena nomFicherosVehiculos;
-	cadena nomFicherosTipoSancion;
+	cadena nomFicheroVehiculos;
+	cadena nomFicheroTipoSancion;
 	bool ficheroSancionesActivo;
-}
+
 public:
-	~GestorSancios();
-	GestorSancios(cadena nFSanciones, cadena nFRadares, cadena nFVehiculos, cadena nFTipoSancion);
+	~GestorSanciones();
+	GestorSanciones(cadena nFSanciones, cadena nFRadares, cadena nFVehiculos, cadena nFTipoSancion);
 	bool getFicheroSancionesActivo();
-	void getNomFicheroVehiculos(cadena nF);
-	void getNomFicheroTipoSancion(cadena nF);
+	void getNomFicheroVehiculos(cadena &nF);
+	void getNomFicheroTipoSancion(cadena &nF);
 	void mostrarRadares();
 	bool mostrarRadar(int c);
 	bool mostrarLecturasRadar(int c);
