@@ -3,16 +3,27 @@
 
 //constructor
 GestorSanciones::GestorSanciones(cadena nFSanciones, cadena nFRadares, cadena nFVehiculos, cadena nFTipoSancion){
-    strcpy(nomFicheroRadares, nFRadares);
+	strcpy(nomFicheroRadares, nFRadares);
     strcpy(nomFicheroVehiculos, nFVehiculos);
     strcpy(nomFicheroTipoSancion, nFTipoSancion);
-	ficheroSancionesActivo = false;
-    ficheroSanciones.open(nFSanciones, ios::in | ios::out | ios::binary);;
+    ficheroSancionesActivo = false;
 
-    if (ficheroSanciones.fail()){
+    ficheroSanciones.open(nFSanciones, ios::in | ios::out | ios::binary);
+
+    if (ficheroSanciones.fail()) {
+        // no existe, crearlo
+        ficheroSanciones.clear();
+        ficheroSanciones.open(nFSanciones, ios::out | ios::binary);
+        ficheroSanciones.close();
+        ficheroSanciones.clear();
+        // volver a abrir en modo lectura/escritura
+        ficheroSanciones.open(nFSanciones, ios::in | ios::out | ios::binary);
+    }
+
+    if (ficheroSanciones.fail()) {
         ficheroSancionesActivo = false;
     } else {
-    	ficheroSancionesActivo = true;
+        ficheroSancionesActivo = true;
     }
 };
 

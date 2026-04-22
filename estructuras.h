@@ -1,5 +1,5 @@
-//#ifndef GESTORSANCIONES_H
-//#define GESTORSANCIONES_H
+#ifndef ESTRUCTURAS_H
+#define ESTRUCTURAS_H
 
 #include <iostream>
 
@@ -62,3 +62,4 @@ struct sanciones {
 	tlectura fh;//fecha/hora de la infracción (fecha/hora del paso del vehículo por el
 	//punto 2 del radar).
 };
+#endif

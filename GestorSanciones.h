@@ -32,3 +32,4 @@ public:
 	bool mostrarTipoSancion(int a);
 	void mostrarSanciones();
 };
+#endif
