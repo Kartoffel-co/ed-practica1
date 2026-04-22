@@ -149,7 +149,7 @@ bool GestorSanciones::mostrarLecturasRadar(int c){
 };
 
 bool GestorSanciones::procesarRadar(int c){
-	return false;	
+	return false;
 };
 
 bool GestorSanciones::mostrarVehiculo(cadena m){

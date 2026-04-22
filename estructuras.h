@@ -53,3 +53,12 @@ struct tipossanciones {
 	int puntosv[3];
 	int puntositv;
 };
+
+struct sanciones {
+	cadena matricula;//matrícula del vehículo sancionado.
+	float euros;//cuantía en euros de la multa emitida por la infracción.
+	int puntos;//número de puntos de carné sancionados (si procede).
+	int codRadar;//código identificador del radar que registró la infracción.
+	tlectura fh;//fecha/hora de la infracción (fecha/hora del paso del vehículo por el
+	//punto 2 del radar).
+};
