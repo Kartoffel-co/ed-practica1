@@ -1,21 +1,22 @@
 #include "GestorSanciones.h"
 
 
-
+//constructor
 GestorSanciones::GestorSanciones(cadena nFSanciones, cadena nFRadares, cadena nFVehiculos, cadena nFTipoSancion){
-    strcpy(nFRadares, nomFicheroRadares);
-    strcpy(nFVehiculos, nomFicheroVehiculos);
-    strcpy(nFTipoSancion, nomFicheroTipoSancion);
+    strcpy(nomFicheroRadares, nFRadares);
+    strcpy(nomFicheroVehiculos, nFVehiculos);
+    strcpy(nomFicheroTipoSancion, nFTipoSancion);
 	ficheroSancionesActivo = false;
-    ficheroSanciones.open(nFSanciones, ios::binary);
+    ficheroSanciones.open(nFSanciones, ios::in | ios::out | ios::binary);;
 
     if (ficheroSanciones.fail()){
         ficheroSancionesActivo = false;
-    };
-
-    ficheroSancionesActivo = true;
+    } else {
+    	ficheroSancionesActivo = true;
+    }
 };
 
+//destructor
 GestorSanciones::~GestorSanciones(){
 	if (ficheroSanciones.is_open()){
 		ficheroSanciones.close();
@@ -27,6 +28,24 @@ bool GestorSanciones::getFicheroSancionesActivo(){
 };
 
 // privada
+
+bool GestorSanciones::esFechaPosterior(tlectura lectura2, tlectura lectura1) {
+    if (lectura2.fecha.anno != lectura1.fecha.anno) return lectura2.fecha.anno > lectura1.fecha.anno;
+    if (lectura2.fecha.mes  != lectura1.fecha.mes)  return lectura2.fecha.mes  > lectura1.fecha.mes;
+    if (lectura2.fecha.dia  != lectura1.fecha.dia)  return lectura2.fecha.dia  > lectura1.fecha.dia;
+    if (lectura2.hora.hora  != lectura1.hora.hora)  return lectura2.hora.hora  > lectura1.hora.hora;
+    if (lectura2.hora.min   != lectura1.hora.min)   return lectura2.hora.min   > lectura1.hora.min;
+    return lectura2.hora.seg > lectura1.hora.seg;
+}
+
+int GestorSanciones::calcularTiempo(tlectura lectura1, tlectura lectura2) {
+    int seg1 = lectura1.fecha.dia * 86400 + lectura1.hora.hora * 3600 
+             + lectura1.hora.min * 60 + lectura1.hora.seg;
+    int seg2 = lectura2.fecha.dia * 86400 + lectura2.hora.hora * 3600 
+             + lectura2.hora.min * 60 + lectura2.hora.seg;
+    return (seg2 - seg1);
+}
+
 
 // publica
 void GestorSanciones::getNomFicheroVehiculos(cadena &nF){
@@ -53,7 +72,7 @@ void GestorSanciones::mostrarRadares(){
 			cout << "Nombre:             " << radar.nombre << endl;
 			cout << "Provincia:          " << radar.provincia << endl;
 			cout << "Localizacion:       " << radar.localizacion << endl;
-			cout << "Distancia:          " << radar.distancia << " km/h" <<endl;
+			cout << "Distancia:          " << radar.distancia << " km" <<endl;
 			cout << "Velocidad maxima:   " << radar.velocidadMediaMaxima << " km/h" << endl;
 			cout << "Fichero punto 1:    " << radar.ficheropunto1 << endl;
 			cout << "Fichero punto 2:    " << radar.ficheropunto2 << endl << endl;
@@ -77,7 +96,7 @@ bool GestorSanciones::mostrarRadar(int c){
 			cout << "Nombre:             " << radar.nombre << endl;
 			cout << "Provincia:          " << radar.provincia << endl;
 			cout << "Localizacion:       " << radar.localizacion << endl;
-			cout << "Distancia:          " << radar.distancia << " km/h" <<endl;
+			cout << "Distancia:          " << radar.distancia << " km" <<endl;
 			cout << "Velocidad maxima:   " << radar.velocidadMediaMaxima << " km/h" << endl;
 			cout << "Fichero punto 1:    " << radar.ficheropunto1 << endl;
 			cout << "Fichero punto 2:    " << radar.ficheropunto2 << endl << endl;
@@ -149,8 +168,157 @@ bool GestorSanciones::mostrarLecturasRadar(int c){
 };
 
 bool GestorSanciones::procesarRadar(int c){
-	c = 0;
-	ficheroSanciones.open("sanciones", ios::in | ios::out | ios::app | ios::binary);
+	ifstream fradares;
+	fradares.open(nomFicheroRadares, ios::binary);
+	
+	radartramo radar;
+	fradares.read((char*) &radar, sizeof(radartramo));
+	
+	while (!fradares.fail()){
+		if (radar.codigo == c){
+			fradares.close();
+			
+			ifstream fpunto1;
+			ifstream fpunto2;
+	
+			fpunto1.open(radar.ficheropunto1, ios::binary);
+			fpunto2.open(radar.ficheropunto2, ios::binary);
+	
+			if(fpunto1.fail() || fpunto2.fail()){
+				fpunto1.close();
+				fpunto2.close();
+				return false;
+			};
+			
+			lecturavehiculo punto1;
+			lecturavehiculo punto2;
+	
+			fpunto1.read((char*) &punto1, sizeof(lecturavehiculo));
+			fpunto2.read((char*) &punto2, sizeof(lecturavehiculo));
+	
+			int tamanno = 2;
+			int elementos = 0;
+	
+			lecturavehiculo* vectorPunto2 = new lecturavehiculo[tamanno];				
+			
+			while (!fpunto2.fail()){
+				if (elementos == tamanno){
+					tamanno += 2;
+					lecturavehiculo* vectorTemp = new lecturavehiculo[tamanno];
+	
+					for (int i = 0; i < elementos; i++){
+						vectorTemp[i] = vectorPunto2[i];
+					}
+	
+					delete[] vectorPunto2;
+					vectorPunto2 = vectorTemp;
+				}
+				vectorPunto2[elementos] = punto2;
+				elementos++;
+				fpunto2.read((char*) &punto2, sizeof(lecturavehiculo));
+			}
+			fpunto2.close();
+			
+			while (!fpunto1.fail()){
+				int i = 0;
+				bool encontrado = false;
+
+				while(i < elementos && !encontrado){
+					if(atoi(punto1.matricula) == atoi(vectorPunto2[i].matricula) && esFechaPosterior(vectorPunto2[i].lec, punto1.lec)){
+						encontrado = true;
+					} else {
+						i++;
+					}
+				}
+				if (encontrado){
+					//calcular velocidad media
+					int tiempoSegundos = calcularTiempo(punto1.lec, vectorPunto2[i].lec);
+					int distanciaMetros = radar.distancia * 1000;
+					float velocidad = distanciaMetros / tiempoSegundos;
+					float velocidadMaxima = radar.velocidadMediaMaxima / 3.6; //km/h a m/s
+
+					//consultar itv
+					ifstream fcoches;
+					fcoches.open(nomFicheroVehiculos, ios::binary);
+					coche vehiculo;
+					int posicion = atoi(punto1.matricula) % 1000;
+					fcoches.seekg(posicion * sizeof(coche), ios::beg);
+					fcoches.read((char*) &vehiculo, sizeof(coche));
+
+					//fecha actual
+					time_t tiempoActual = time(0);
+					tm* fechaActual = localtime(&tiempoActual);
+					int diaActual = fechaActual->tm_mday;
+					int mesActual = fechaActual->tm_mon + 1;
+					int annoActual = fechaActual->tm_year + 1900;
+
+					//comprobar si la itv ha vencido
+					bool itvVencida = false;
+					if (!fcoches.fail()){
+						tfecha fechaITV = vehiculo.fechaitv;
+						if (fechaITV.anno < annoActual) itvVencida = true;
+						else if (fechaITV.anno == annoActual && fechaITV.mes < mesActual) itvVencida = true;
+						else if (fechaITV.anno == annoActual && fechaITV.mes == mesActual && fechaITV.dia < diaActual) itvVencida = true;
+					}
+					fcoches.close();
+
+					// consultar tipo de sancion segun el año de la captura
+					int annoCaptura = vectorPunto2[i].lec.fecha.anno;
+					ifstream ftipos;
+					ftipos.open(nomFicheroTipoSancion, ios::binary);
+					tipossanciones tipoSancion;
+					int posicionTipo = annoCaptura % 2000;
+					ftipos.seekg(posicionTipo * sizeof(tipossanciones), ios::beg);
+					ftipos.read((char*) &tipoSancion, sizeof(tipossanciones));
+					ftipos.close();
+
+					if (velocidad > velocidadMaxima || itvVencida) {
+					    sanciones sancion;
+					    strcpy(sancion.matricula, punto1.matricula);
+					    sancion.codRadar = radar.codigo;
+					    sancion.fh = vectorPunto2[i].lec;
+					    sancion.euros = 0;
+					    sancion.puntos = 0;
+
+						// determinar franja de sancion por velocidad
+						// leve: hasta 10%, estandar: 10-20%, grave: mas de 20%
+						float exceso = (velocidad - velocidadMaxima) / velocidadMaxima * 100;
+ 
+
+					    if (velocidad > radar.velocidadMediaMaxima) {
+					        if (exceso <= 10) {
+					            sancion.euros  = tipoSancion.eurosv[0];
+					            sancion.puntos = tipoSancion.puntosv[0];
+					        } else if (exceso <= 20) {
+					            sancion.euros  = tipoSancion.eurosv[1];
+					            sancion.puntos = tipoSancion.puntosv[1];
+					        } else {
+					            sancion.euros  = tipoSancion.eurosv[2];
+					            sancion.puntos = tipoSancion.puntosv[2];
+					        }
+					    }
+					
+						if (itvVencida) {
+						    sancion.puntos += tipoSancion.puntositv;
+						}
+	
+						// escribir sancion al final del fichero de sanciones
+						ficheroSanciones.seekp(0, ios::end);
+						ficheroSanciones.write((char*) &sancion, sizeof(sanciones));
+					}
+				}
+				fpunto1.read((char*) &punto1, sizeof(lecturavehiculo));
+			}
+			fpunto1.close();				
+			delete[] vectorPunto2;
+			return true;
+		};
+		
+		fradares.read((char*) &radar, sizeof(radartramo));
+	};
+	
+	fradares.close();	
+	
 	return false;
 };
 
@@ -241,6 +409,17 @@ bool GestorSanciones::mostrarTipoSancion(int a){
 	fTipoSancion.close();
 	return true;	
 };
+
 void GestorSanciones::mostrarSanciones(){
-	
+	ficheroSanciones.seekg(0, ios::beg);
+	sanciones sancion;
+	ficheroSanciones.read((char*) &sancion, sizeof(sanciones));
+	while (!ficheroSanciones.fail()){
+	    cout << "Matricula: " << sancion.matricula << endl;
+	    cout << "Euros: "    << sancion.euros      << endl;
+	    cout << "Puntos: "   << sancion.puntos      << endl;
+	    cout << "Radar: "    << sancion.codRadar    << endl;
+	    ficheroSanciones.read((char*) &sancion, sizeof(sanciones));
+	}
+	ficheroSanciones.clear();
 };

@@ -15,6 +15,8 @@ class GestorSanciones {
 	cadena nomFicheroTipoSancion;
 	bool ficheroSancionesActivo;
 
+	bool esFechaPosterior(tlectura lectura2, tlectura lectura1);
+	int calcularTiempo(tlectura lectura1, tlectura lectura2);
 public:
 	~GestorSanciones();
 	GestorSanciones(cadena nFSanciones, cadena nFRadares, cadena nFVehiculos, cadena nFTipoSancion);
