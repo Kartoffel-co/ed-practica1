@@ -149,6 +149,8 @@ bool GestorSanciones::mostrarLecturasRadar(int c){
 };
 
 bool GestorSanciones::procesarRadar(int c){
+	c = 0;
+	ficheroSanciones.open("sanciones", ios::in | ios::out | ios::app | ios::binary);
 	return false;
 };
 
